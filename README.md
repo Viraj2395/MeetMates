@@ -1,2 +1,0 @@
-# MeetMates
-Event Organiser

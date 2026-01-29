@@ -1,6 +1,9 @@
 import "./globals.css";
 import Header from "@/components/header";
 import { ThemeProvider } from "@/components/theme-provider";
+import { ConvexClientProvider } from "./ConvexClientProvider";
+import { ClerkProvider } from "@clerk/nextjs";
+
 
 
 export const metadata = {
@@ -20,10 +23,13 @@ export default function RootLayout({ children }) {
             enableSystem
             disableTransitionOnChange
           >
+            <ClerkProvider>
+            <ConvexClientProvider>
+        
         {/* Header */}
-        <Header>
+        <Header />
           
-        </Header>
+        
 
         <main className="relative min-h-screen container mx-auto pt-40 md:pt-32">
         {/* glow */}
@@ -38,6 +44,8 @@ export default function RootLayout({ children }) {
             <div className="text-sm text-gray-400">Made with love by Viiirrraj❤️</div>
           </footer>
         </main>
+        </ConvexClientProvider>
+        </ClerkProvider>
         </ThemeProvider>
       </body>
     </html>
