@@ -5,24 +5,34 @@ import React from 'react';
 // 2. Next.js
 import Image from 'next/image';
 import Link from 'next/link';
+import { useState } from 'react';
+import { Building, Plus, Ticket } from 'lucide-react';
 
 
 // 3. Third-party libraries
 import {
-  SignedIn,
-  SignedOut,
-  SignIn,
-  SignInButton,
-  SignUp,
-  SignUpButton,
-  UserButton
+    SignedIn,
+    SignedOut,
+    SignIn,
+    SignInButton,
+    SignUp,
+    SignUpButton,
+    UserButton
 } from '@clerk/nextjs';
 
 import { Button } from './ui/UI/button';
 import { Authenticated, Unauthenticated } from 'convex/react';
+import { BarLoader } from 'react-spinners';
+import { useStoreUser } from '@/hooks/use-store-user';
 
 
 const Header = () => {
+
+    const { isLoading } = useStoreUser();
+
+    const [showUpgradeModal, setShowUpgradeModal] = useState(false);
+
+
     return (
         <>
             <nav className="fixed top-0 left-0 right-0 bg- background/80 backdrop-blur-xl z-20 border-b">
@@ -38,13 +48,45 @@ const Header = () => {
 
                     {/* Right Side Actions */}
                     <div className="flex items-center">
+                        <Button variant={"ghost"} size="sm" onClick={() => setShowUpgradeModal(true)}>
+                            Pricing
+                        </Button>
+
+                        <Button variant={"ghost"} size="sm" asChild className={"mr-2"}>
+                            <Link href="explore">Explore</Link>
+                        </Button>
+
                         <Authenticated>
-                            {/* Create Event */}
-                            <UserButton />
+                            <Button size="sm" asChild className="flex gap-2 mr-4">
+                                <Link href="/create-event">
+                                    <Plus className="w-4 h-4" />
+                                    <span className="hidden sm:inline">Create Event</span>
+                                </Link>
+                            </Button>
+
+                            {/* Define customs setting when you click on profile */}
+                            <UserButton >
+                                <UserButton.MenuItems>
+                                    <UserButton.Link
+                                        label="My Tickets"
+                                        labelIcon={<Ticket size={16} />}
+                                        href="/my-tickets"
+                                    />
+                                    <UserButton.Link
+                                        label="My Events"
+                                        labelIcon={<Building size={16} />}
+                                        href="/my-events"
+                                    />
+
+
+
+                                    <UserButton.Action label="manageAccount" />
+                                </UserButton.MenuItems>
+                            </UserButton >
                         </Authenticated>
 
                         <Unauthenticated>
-                            <SignInButton mode = "modal">
+                            <SignInButton mode="modal">
                                 <Button size="sm">Sign In</Button>
                             </SignInButton >
                         </Unauthenticated>
@@ -55,6 +97,12 @@ const Header = () => {
 
 
                 {/* Loader */}
+                {isLoading && (
+                    <div className="absolute bottom-0 left-0 w-full">
+                        <BarLoader width={"100%"} color="#a855f7" />
+                    </div>
+                )}
+
             </nav>
 
             {/* Models */}
