@@ -125,7 +125,7 @@ export const getEventsByCategory = query({
 });
 
 export const getCategoryCounts = query({
-    hanlder: async (ctx) => {
+    handler: async (ctx) => {
         const now = Date.now();
         const events = await ctx.db
         .query("events")
