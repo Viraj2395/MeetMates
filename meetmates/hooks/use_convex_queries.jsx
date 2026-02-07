@@ -34,7 +34,7 @@ export const useConvexQuery = (query, ...args) => {
 };
 
 export const useConvexMutation = (mutation) => {
-    const result = useMutation(utation);
+    const result = useMutation(mutation);
 
     const[data, setData] = useState(undefined);
     const[isLoading,setIsLoading] = useState(true);

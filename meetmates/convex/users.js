@@ -22,10 +22,10 @@ export const store = mutation({
     if (user !== null) {
       // If we've seen this identity before but the name has changed, patch the value.
       if (user.name !== identity.name) {
-        await ctx.db.patch(user._id, { 
-            name: identity.name,
-            updatedAt: Date.now(),
-         });
+        await ctx.db.patch(user._id, {
+          name: identity.name,
+          updatedAt: Date.now(),
+        });
       }
       return user._id;
     }
@@ -33,34 +33,60 @@ export const store = mutation({
     return await ctx.db.insert("users", {
       name: identity.name ?? "Anonymous",
       tokenIdentifier: identity.tokenIdentifier,
-      email : identity.email?? "",
+      email: identity.email ?? "",
       imageUrl: identity.pictureUrl,
       hasCompletedOnBoarding: false,
-      freeEventsCreated : 0,
-      createdAt : Date.now(),
-      updatedAt : Date.now(),
+      freeEventsCreated: 0,
+      createdAt: Date.now(),
+      updatedAt: Date.now(),
     });
   },
 });
 
 export const getCurrentUser = query({
-    handler: async (ctx)=>{
-        const identity = await ctx.auth.getUserIdentity();
-        if(!identity){
-            return null;
-        }
+  handler: async (ctx) => {
+    const identity = await ctx.auth.getUserIdentity();
+    if (!identity) {
+      return null;
+    }
 
-        const user = await ctx.db
-        .query("users")
-        .withIndex("by_token", (q) =>
-            q.eq("tokenIdentifier" , identity.tokenIdentifier)
+    const user = await ctx.db
+      .query("users")
+      .withIndex("by_token", (q) =>
+        q.eq("tokenIdentifier", identity.tokenIdentifier)
 
-        )
-        .unique();
+      )
+      .unique();
 
-        if(!user){
-            throw new Error("User not found");
-        }
+    if (!user) {
+      throw new Error("User not found");
+    }
     return user;
-    },
+  },
 });
+
+
+export const completeOnboarding = mutation({
+  args: {
+    location: v.object({
+      city: v.string(),
+      state: v.optional(v.string()),
+      country: v.string(),
+    }),
+    interests: v.array(v.string()), // Min 3 categories
+  },
+  handler: async (ctx, args) => {
+    const user = await ctx.runQuery(internal.users.getCurrentUser);
+    await ctx.db.patch(user._id, {
+      location: args.location,
+      interests: args.interests,
+      hasCompletedOnboarding: true,
+      updatedAt: Date.now(),
+    });
+    return user._id;
+  },
+});
+
+
+
+

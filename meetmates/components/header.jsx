@@ -24,6 +24,8 @@ import { Button } from './ui/UI/button';
 import { Authenticated, Unauthenticated } from 'convex/react';
 import { BarLoader } from 'react-spinners';
 import { useStoreUser } from '@/hooks/use-store-user';
+import { useOnboarding } from '@/hooks/use-onboarding';
+import { OnboardingModal  } from './onboarding-modal';
 
 
 const Header = () => {
@@ -32,6 +34,7 @@ const Header = () => {
 
     const [showUpgradeModal, setShowUpgradeModal] = useState(false);
 
+    const { showOnboarding, handleOnboardingComplete, handleOnboardingSkip } = useOnboarding();
 
     return (
         <>
@@ -91,9 +94,11 @@ const Header = () => {
                             </SignInButton >
                         </Unauthenticated>
                     </div>
+
                 </div>
 
                 {/* Mobile Search & Location - Below Header*/}
+
 
 
                 {/* Loader */}
@@ -105,7 +110,12 @@ const Header = () => {
 
             </nav>
 
-            {/* Models */}
+            {/* Modals */}
+            <OnboardingModal
+                isOpen={showOnboarding}
+                onClose={handleOnboardingSkip}
+                onComplete={handleOnboardingComplete}
+            />
         </>
     );
 }
